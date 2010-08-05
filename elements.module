@@ -2,7 +2,7 @@
 // $Id$
 
 /**
- * Implement hook_elements().
+ * Implements hook_elements().
  */
 function elements_elements() {
   $types['tableselect'] = array(
@@ -24,6 +24,9 @@ function theme_imagebutton($element) {
   return '<input type="image" class="form-'. $element['#button_type'] .'" name="'. $element['#name'] .'" value="'. check_plain($element['#default_value']) .'" '. drupal_attributes($element['#attributes']) . ' src="' . $element['#image'] . '" alt="' . $element['#title'] . '" title="' . $element['#title'] . "\" />\n";
 }
 
+/**
+ * Dummy function.
+ */
 function imagebutton_value() {
   // NULL function guarantees default_value doesn't get moved to #value.
 }
@@ -52,9 +55,6 @@ function form_process_tableselect($element) {
     if (!isset($element['#default_value']) || $element['#default_value'] === 0) {
       $element['#default_value'] = array();
     }
-
-    // Sort the options by their #weight if they have a #weight.
-    uasort($element['#options'], '_element_sort');
 
     // Create a checkbox or radio for each item in #options in such a way that
     // the value of the tableselect element behaves as if it had been of type
