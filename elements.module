@@ -20,6 +20,14 @@ function elements_elements() {
   return $types;
 }
 
+/**
+ * Theme the imagebutton form element.
+ *
+ * @param array $element
+ *
+ * @return string
+ *   HTML representation of the imagebutton.
+ */
 function theme_imagebutton($element) {
   return '<input type="image" class="form-'. $element['#button_type'] .'" name="'. $element['#name'] .'" value="'. check_plain($element['#default_value']) .'" '. drupal_attributes($element['#attributes']) . ' src="' . $element['#image'] . '" alt="' . $element['#title'] . '" title="' . $element['#title'] . "\" />\n";
 }
