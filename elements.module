@@ -122,7 +122,7 @@ function elements_add_autocomplete(&$element) {
   $extra = '';
 
   if (!empty($element['#autocomplete_path']) && drupal_valid_path($element['#autocomplete_path'])) {
-    drupal_add_js('misc/autocomplete.js');
+    drupal_add_library('system', 'drupal.autocomplete');
     $element['#attributes']['class'][] = 'form-autocomplete';
 
     $attributes = array();
