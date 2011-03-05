@@ -52,7 +52,123 @@ function elements_element_info() {
     '#theme_wrappers' => array('form_element'),
   );
 
+  $types['horizontal_tabs'] = array(
+    '#theme_wrappers' => array('horizontal_tabs'),
+    '#default_tab' => '',
+    '#process' => array('form_process_horizontal_tabs'),
+  );
+
   return $types;
+}
+
+/**
+ * Implements hook_library().
+ */
+function elements_library() {
+  $path = drupal_get_path('module', 'elements');
+
+  // Horizontal Tabs.
+  $libraries['horizontal-tabs'] = array(
+    'title' => 'Horizontal Tabs',
+    'website' => 'http://drupal.org/node/323112',
+    'version' => '1.0',
+    'js' => array(
+      $path . '/horizontal-tabs.js' => array(),
+    ),
+    'css' => array(
+      $path . '/horizontal-tabs.css' => array(),
+    ),
+    'dependencies' => array(
+      // Vertical tabs relies on drupalGetSummary in form.js
+      //array('system', 'drupal.form'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Creates a group formatted as horizontal tabs.
+ *
+ * @param $element
+ *   An associative array containing the properties and children of the
+ *   fieldset.
+ * @param $form_state
+ *   The $form_state array for the form this horizontal tab widget belongs to.
+ * @return
+ *   The processed element.
+ */
+function form_process_horizontal_tabs($element, &$form_state) {
+  // Inject a new fieldset as child, so that form_process_fieldset() processes
+  // this fieldset like any other fieldset.
+  $element['group'] = array(
+    '#type' => 'fieldset',
+    '#theme_wrappers' => array(),
+    '#parents' => $element['#parents'],
+  );
+
+  // The JavaScript stores the currently selected tab in this hidden
+  // field so that the active tab can be restored the next time the
+  // form is rendered, e.g. on preview pages or when form validation
+  // fails.
+  $name = implode('__', $element['#parents']);
+  if (isset($form_state['values'][$name . '__active_tab'])) {
+    $element['#default_tab'] = $form_state['values'][$name . '__active_tab'];
+  }
+  $element[$name . '__active_tab'] = array(
+    '#type' => 'hidden',
+    '#default_value' => $element['#default_tab'],
+    '#attributes' => array('class' => array('horizontal-tabs-active-tab')),
+  );
+
+  return $element;
+}
+
+/**
+ * Returns HTML for an element's children fieldsets as horizontal tabs.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - element: An associative array containing the properties and children of the
+ *     fieldset. Properties used: #children.
+ *
+ * @ingroup themeable
+ */
+function theme_horizontal_tabs($variables) {
+  $element = $variables['element'];
+  // Add required JavaScript and Stylesheet.
+  drupal_add_library('elements', 'horizontal-tabs');
+
+  $output = '<h2 class="element-invisible">' . t('Horizontal Tabs') . '</h2>';
+  $output .= '<div class="horizontal-tabs-panes">' . $element['#children'] . '</div>';
+
+  return $output;
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function elements_field_widget_info() {
+  return array(
+    'elements_url' => array(
+      'label' => t('HTML5 URL field'),
+      'field types' => array('link_field'),
+      'settings' => array('size' => 60),
+    ),
+  );
+}
+
+function elements_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  switch ($instance['widget']['type']) {
+    case 'elements_url':
+      $element += array(
+        '#type' => 'urlfield',
+        '#default_value' => isset($items[$delta]) ? $items[$delta] : '',
+      );
+      break;
+  }
+
+  return $element;
 }
 
 /**
@@ -104,6 +220,9 @@ function elements_theme() {
       'arguments' => array('element' => NULL),
       'render element' => 'element',
       'file' => 'elements.theme.inc',
+    ),
+    'horizontal_tabs' => array(
+      'render element' => 'element',
     ),
   );
 }
