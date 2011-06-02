@@ -10,6 +10,7 @@ function elements_element_info() {
     '#maxlength' => 128,
     '#autocomplete_path' => FALSE,
     '#process' => array('ajax_process_form'),
+    '#element_validate' => array('elements_validate_email'),
     '#theme' => 'emailfield',
     '#theme_wrappers' => array('form_element'),
   );
@@ -36,6 +37,7 @@ function elements_element_info() {
     '#maxlength' => 128,
     '#autocomplete_path' => FALSE,
     '#process' => array('ajax_process_form'),
+    '#element_validate' => array('elements_validate_url'),
     '#theme' => 'urlfield',
     '#theme_wrappers' => array('form_element'),
   );
@@ -153,4 +155,26 @@ function form_process_placeholder($element) {
     $element['#attributes']['placeholder'] = $element['#placeholder'];
   }
   return $element;
+}
+
+/**
+ * Form element validation handler for #type 'email'.
+ *
+ * Note that #maxlength and #required is validated by _form_validate() already.
+ */
+function elements_validate_email(&$element, &$form_state) {
+  if ($element['#value'] && !valid_email_address($element['#value'])) {
+    form_error($element, t('The e-mail address %mail is not valid.', array('%mail' => $element['#value'])));
+  }
+}
+
+/**
+ * Form element validation handler for #type 'url'.
+ *
+ * Note that #maxlength and #required is validated by _form_validate() already.
+ */
+function elements_validate_url(&$element, &$form_state) {
+  if ($element['#value'] && !valid_url($element['#value'], TRUE)) {
+    form_error($element, t('The URL %url is not valid.', array('%url' => $element['#value'])));
+  }
 }

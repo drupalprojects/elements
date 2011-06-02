@@ -14,7 +14,7 @@
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #value, #description, #size, #maxlength,
- *     #required, #placeholder, #attributes, #autocomplete_path.
+ *     #placeholder, #required, #attributes, #autocomplete_path.
  *
  * @ingroup themeable
  */
@@ -37,7 +37,7 @@ function theme_emailfield($variables) {
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #value, #description, #size, #maxlength,
- *     #required, #placeholder, #attributes, #autocomplete_path.
+ *     #placeholder, #required, #attributes, #autocomplete_path.
  *
  * @ingroup themeable
  */
@@ -60,7 +60,7 @@ function theme_searchfield($variables) {
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #value, #description, #size, #maxlength,
- *     #required, #placeholder, #attributes.
+ *     #placeholder, #required, #attributes.
  *
  * @ingroup themeable
  */
@@ -83,7 +83,7 @@ function theme_telfield($variables) {
  *   An associative array containing:
  *   - element: An associative array containing the properties of the element.
  *     Properties used: #title, #value, #description, #size, #maxlength,
- *     #required, #placeholder, #attributes, #autocomplete_path.
+ *     #placeholder, #required, #attributes, #autocomplete_path.
  *
  * @ingroup themeable
  */
