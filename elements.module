@@ -9,7 +9,7 @@ function elements_element_info() {
     '#size' => 60,
     '#maxlength' => 128,
     '#autocomplete_path' => FALSE,
-    '#process' => array('ajax_process_form'),
+    '#process' => array('ajax_process_form', 'elements_process_pattern'),
     '#element_validate' => array('elements_validate_email'),
     '#theme' => 'emailfield',
     '#theme_wrappers' => array('form_element'),
@@ -27,7 +27,7 @@ function elements_element_info() {
     '#input' => TRUE,
     '#size' => 20,
     '#maxlength' => 64,
-    '#process' => array('ajax_process_form'),
+    '#process' => array('ajax_process_form', 'elements_process_pattern'),
     '#theme' => 'telfield',
     '#theme_wrappers' => array('form_element'),
   );
@@ -36,7 +36,7 @@ function elements_element_info() {
     '#size' => 80,
     '#maxlength' => 128,
     '#autocomplete_path' => FALSE,
-    '#process' => array('ajax_process_form'),
+    '#process' => array('ajax_process_form', 'elements_process_pattern'),
     '#element_validate' => array('elements_validate_url'),
     '#theme' => 'urlfield',
     '#theme_wrappers' => array('form_element'),
@@ -61,13 +61,14 @@ function elements_element_info() {
  * Implements hook_element_info_alter().
  */
 function elements_element_info_alter(&$types) {
-  // Add placeholder support to textfields and textareas.
+  // Add placeholder and pattern support to core form elements.
   foreach (array_keys($types) as $type) {
     switch ($type) {
       case 'textfield':
       case 'textarea':
       case 'password':
-        $types[$type]['#process'][] = 'form_process_placeholder';
+        $types[$type]['#process'][] = 'elements_process_placeholder';
+        $types[$type]['#process'][] = 'elements_process_pattern';
         break;
     }
   }
@@ -141,21 +142,69 @@ function elements_add_autocomplete(&$element) {
 }
 
 /**
- * Element process callback; adds support for the HTML5 placeholder attribute.
+ * #process callback for #placeholder form element property.
  *
  * @param $element
- *   An associative array containing the properties of the element.
+ *   An associative array containing the properties and children of the
+ *   generic input element.
  *
  * @return
  *   The processed element.
  */
-function form_process_placeholder($element) {
+function elements_process_placeholder($element) {
   if (isset($element['#placeholder']) && !isset($element['#attributes']['placeholder'])) {
-    // If the placeholder FAPI property is set, simply add it to the form's
-    // attributes so it will be output in the HTML tag.
     $element['#attributes']['placeholder'] = $element['#placeholder'];
   }
+
   return $element;
+}
+
+/**
+ * #process callback for #pattern form element property.
+ *
+ * @param $element
+ *   An associative array containing the properties and children of the
+ *   generic input element.
+ *
+ * @return
+ *   The processed element.
+ *
+ * @see elements_validate_pattern()
+ */
+function elements_process_pattern($element) {
+  if (isset($element['#pattern']) && !isset($element['#attributes']['pattern'])) {
+    $element['#attributes']['pattern'] = $element['#pattern'];
+    $element['#element_validate'][] = 'form_validate_pattern';
+  }
+
+  return $element;
+}
+
+/**
+ * #element_validate callback for #pattern form element property.
+ *
+ * @param $element
+ *   An associative array containing the properties and children of the
+ *   generic form element.
+ * @param $form_state
+ *   The $form_state array for the form this element belongs to.
+ *
+ * @see element_process_pattern()
+ */
+function elements_validate_pattern($element, &$form_state) {
+  if ($element['#value'] !== '') {
+    // The pattern must match the entire string and should have the same
+    // behavior as the RegExp object in ECMA 262.
+    // - Use bracket-style delimiters to avoid introducing a special delimiter
+    //   character like '/' that would have to be escaped.
+    // - Put in brackets so that the pattern can't interfere with what's
+    //   prepended and appended.
+    $pattern = '{^(?:' . $element['#pattern'] . ')$}';
+
+    if (!preg_match($pattern, $element['#value'])) {
+      form_error($element, t('%name field is not in the right format.', array('%name' => $element['#title'])));
+    }
+  }
 }
 
 /**
