@@ -72,8 +72,8 @@ function elements_element_info() {
     '#multiple' => TRUE,
     '#js_select' => TRUE,
     '#value_callback' => 'elements_table_value',
-    '#process' => array('elements_process_table'),
-    '#element_validate' => array('elements_validate_table'),
+    '#process' => array('elements_table_process'),
+    '#element_validate' => array('elements_table_validate'),
     // Properties for tabledrag support.
     // The value is a list of arrays that are passed to drupal_add_tabledrag().
     // elements_pre_render_table() prepends the HTML ID of the table to each set
@@ -386,7 +386,7 @@ function elements_table_value(array $element, $input = FALSE) {
  * @return
  *   The processed element.
  */
-function elements_process_table($element, &$form_state) {
+function elements_table_process($element, &$form_state) {
   if ($element['#tableselect']) {
     if ($element['#multiple']) {
       $value = is_array($element['#value']) ? $element['#value'] : array();
@@ -478,7 +478,7 @@ function elements_process_table($element, &$form_state) {
  * @param array $form_state
  *   The current state of the form.
  */
-function elements_validate_table($element, &$form_state) {
+function elements_table_validate($element, &$form_state) {
   // Skip this validation if the button to submit the form does not require
   // selected table row data.
   if (empty($form_state['triggering_element']['#tableselect'])) {
