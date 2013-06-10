@@ -481,9 +481,9 @@ function elements_table_process($element, &$form_state) {
 function elements_table_validate($element, &$form_state) {
   // Skip this validation if the button to submit the form does not require
   // selected table row data.
-  if (empty($form_state['triggering_element']['#tableselect'])) {
-    return;
-  }
+  //if (empty($form_state['triggering_element']['#tableselect'])) {
+  //  return;
+  //}
   if ($element['#multiple']) {
     if (!is_array($element['#value']) || !count(array_filter($element['#value']))) {
       form_error($element, t('No items selected.'));
