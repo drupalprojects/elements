@@ -592,5 +592,9 @@ function elements_pre_render_table(array $element) {
     $element['#attached']['drupal_add_tabledrag'] = $element['#tabledrag'];
   }
 
+  if (!empty($element['#tabledrag']) && !empty($element['#tableselect'])) {
+    $element['#attached']['css'][] = drupal_get_path('module', 'elements') . '/elements.table.css';
+  }
+
   return $element;
 }
